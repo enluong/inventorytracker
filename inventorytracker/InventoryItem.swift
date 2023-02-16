@@ -15,6 +15,9 @@ struct InventoryItem: Identifiable, Codable {
     @ServerTimestamp var createdAt: Date?
     @ServerTimestamp var updatedAt: Date?
     
+    var location: String
     var name: String
     var quantity: Int
+    var type: String
+    //var cabinet: String
 }
