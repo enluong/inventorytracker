@@ -46,9 +46,6 @@ struct ContentView: View {
 //        .navigationTitle("CSI Inventory")
     }
     
-    // just to check if keyboard is working
-    @State var random = ""
-    
     private var listItemsSectionView: some View {
         Section {
             ForEach(items) { item in
@@ -59,18 +56,18 @@ struct ContentView: View {
                         Text("Location:")
                         TextField("Location", text: Binding<String>(
                             get: { item.location },
-                            set: { vm.editedItemLocation = $0 }),
-                                  onEditingChanged: { vm.onEditingItemLocationChanged(item: item, isEditing: $0)}
-                        )}
+                            set: { vm.updateItem(item, data: ["location": $0]) }
+                        ))
+                    }
                     
                     // ITEM NAME
                     HStack {
                         Text("Item Name:")
                         TextField("Name", text: Binding<String>(
                             get: { item.name },
-                            set: { vm.editedItemName = $0 }),
-                                  onEditingChanged: { vm.onEditingItemNameChanged(item: item, isEditing: $0)}
-                        )}
+                            set: { vm.updateItem(item, data: ["name": $0]) }
+                        ))
+                    }
                     
                     // ITEM QUANTITY
                     Stepper("Quantity: \(item.quantity)",
@@ -84,13 +81,9 @@ struct ContentView: View {
                         Text("Quantity Type:")
                         TextField("Type", text: Binding<String>(
                             get: { item.type },
-                            set: { vm.editedItemType = $0 }),
-                                  onEditingChanged: { vm.onEditingItemTypeChanged(item: item, isEditing: $0)}
-                        )
+                            set: { vm.updateItem(item, data: ["type": $0]) }
+                        ))
                     }
-                    
-                    // check if keyboard works
-                    TextField("Random", text: $random)
                     
                 }
             }
@@ -122,3 +115,4 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
     }
 }
+
