@@ -6,13 +6,11 @@
 //
 //  Modified by Team SEA 2023
 
-import Firebase
+import FirebaseFirestore
 import FirebaseFirestoreSwift
 import SwiftUI
 
 struct ContentView: View {
-    
-    @State var search = " "
     
     @FirestoreQuery(collectionPath: "inventory",
                     predicates: [.order(by: SortType.createdAt.rawValue, descending: true) ]
@@ -28,27 +26,14 @@ struct ContentView: View {
             }
             
             List {
+                InventorySearchView()
                 sortBySectionView
                 listItemsSectionView
             }
-            .listStyle(.insetGrouped)
             
+            .listStyle(.insetGrouped)
         }
-        // Navigation Bar
-        GeometryReader { geo in
-            NavigationView {
-                List {
-                    Spacer()
-                    ForEach(0..<5) { i in
-                        Text("List of items \(i)")
-                    }
-                }
-                .navigationTitle("Search Bar")
-                .navigationBarTitleDisplayMode(.inline)
-                .searchable(text: $search)
-            }
-            .frame(width: geo.size.width, height: geo.size.height)
-        }
+        
         // add item button
         .toolbar {
             ToolbarItem(placement: .bottomBar) {
@@ -60,7 +45,8 @@ struct ContentView: View {
         // sort by buttons
         .onChange(of: vm.selectedSortType) { _ in onSortTypeChanged() }
         .onChange(of: vm.isDescending) { _ in onSortTypeChanged() }
-//        .navigationTitle("CSI Inventory")
+        //        .navigationTitle("CSI Inventory")
+        
     }
     
     private var listItemsSectionView: some View {
@@ -68,12 +54,22 @@ struct ContentView: View {
             ForEach(items) { item in
                 VStack {
                     // hstack keeps text and textfield next to each other
+                    
                     // ITEM LOCATION
                     HStack {
                         Text("Location:")
                         TextField("Location", text: Binding<String>(
                             get: { item.location },
                             set: { vm.updateItem(item, data: ["location": $0]) }
+                        ))
+                    }
+                    
+                    // ITEM CABINET
+                    HStack{
+                        Text("Cabinet:")
+                        TextField("Cabinet", text: Binding<String>(
+                            get: { item.cabinet },
+                            set: { vm.updateItem(item, data: ["cabinet": $0]) }
                         ))
                     }
                     
@@ -104,10 +100,12 @@ struct ContentView: View {
                     
                 }
             }
+            // slide delete bar
             .onDelete { vm.onDelete(items: items, indexset: $0) }
         }
     }
-    
+
+ 
     private var sortBySectionView: some View {
         Section {
             DisclosureGroup("Sort by") {
