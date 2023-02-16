@@ -34,18 +34,21 @@ struct ContentView: View {
             .listStyle(.insetGrouped)
             
         }
-        // Navigation bar
-        
-        NavigationView{
-            List {
-                ForEach(0..<5) { i in
-                    Text("List of items \(i)")
+        // Navigation Bar
+        GeometryReader { geo in
+            NavigationView {
+                List {
+                    Spacer()
+                    ForEach(0..<5) { i in
+                        Text("List of items \(i)")
+                    }
                 }
+                .navigationTitle("Search Bar")
+                .navigationBarTitleDisplayMode(.inline)
+                .searchable(text: $search)
             }
-            .navigationTitle("Search Bar")
-            .searchable(text: $search)
+            .frame(width: geo.size.width, height: geo.size.height)
         }
-        
         // add item button
         .toolbar {
             ToolbarItem(placement: .bottomBar) {
@@ -129,4 +132,3 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
     }
 }
-
