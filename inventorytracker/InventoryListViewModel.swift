@@ -19,12 +19,15 @@ class InventoryListViewModel: ObservableObject {
     @Published var editedItemName = ""
     @Published var editedItemLocation = ""
     @Published var editedItemType = ""
+    @Published var editedItemCabinet = ""
     
     var predicates: [QueryPredicate] { [.order(by: selectedSortType.rawValue, descending: isDescending)] }
     
     func addItem() {
-        let item = InventoryItem(location: "Unknown", name: "New Item", quantity: 1, type:"Unknown")
+        let item = InventoryItem(location: "Unknown", name: "New Item", quantity: 1, type:"Unknown", cabinet:"Unknown")
         _ = try? db.addDocument(from: item)
+        // *
+        db.document().updateData(["keywordsForLookup": item.keywordsForLookup])
     }
     
     func updateItem(_ item: InventoryItem, data: [String: Any]) {
@@ -32,6 +35,8 @@ class InventoryListViewModel: ObservableObject {
         var _data = data
         _data["updatedAt"] = FieldValue.serverTimestamp()
         db.document(id).updateData(_data)
+        // *
+        db.document().updateData(["keywordsForLookup": item.keywordsForLookup])
     }
     
     func onDelete(items: [InventoryItem], indexset: IndexSet) {
@@ -70,4 +75,17 @@ class InventoryListViewModel: ObservableObject {
             editedItemType = item.type
         }
     }
+    
+    // function when editing item cabinet
+    func onEditingItemCabinetChanged(item: InventoryItem, isEditing: Bool) {
+        if !isEditing && item.cabinet != editedItemCabinet {
+            updateItem(item, data: ["cabinet": editedItemCabinet])
+            editedItemCabinet = ""
+        } else {
+            editedItemCabinet = item.cabinet
+        }
+    }
 }
+        
+    
+
