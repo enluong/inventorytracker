@@ -12,6 +12,7 @@ struct InventoryItem: Identifiable, Codable {
     
     @DocumentID var id: String?
     
+    // variables for InventoryItem details
     @ServerTimestamp var createdAt: Date?
     @ServerTimestamp var updatedAt: Date?
     
@@ -19,5 +20,22 @@ struct InventoryItem: Identifiable, Codable {
     var name: String
     var quantity: Int
     var type: String
-    //var cabinet: String
+    var cabinet: String
+    
+    // for search bar
+    var keywordsForLookup: [String] {
+        [self.name.generateStringSequence(), self.location.generateStringSequence(), self.type.generateStringSequence(), self.cabinet.generateStringSequence()].flatMap { $0 }
+    }
+    
+}
+
+extension String {
+    func generateStringSequence() -> [String] {
+        guard self.count > 0 else { return [] }
+        var sequences: [String] = []
+        for i in 1...self.count {
+            sequences.append(String(self.prefix(i)))
+        }
+        return sequences
+    }
 }
