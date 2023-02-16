@@ -6,11 +6,13 @@
 //
 //  Modified by Team SEA 2023
 
-import FirebaseFirestore
+import Firebase
 import FirebaseFirestoreSwift
 import SwiftUI
 
 struct ContentView: View {
+    
+    @State var search = " "
     
     @FirestoreQuery(collectionPath: "inventory",
                     predicates: [.order(by: SortType.createdAt.rawValue, descending: true) ]
@@ -32,6 +34,18 @@ struct ContentView: View {
             .listStyle(.insetGrouped)
             
         }
+        // Navigation bar
+        
+        NavigationView{
+            List {
+                ForEach(0..<5) { i in
+                    Text("List of items \(i)")
+                }
+            }
+            .navigationTitle("Search Bar")
+            .searchable(text: $search)
+        }
+        
         // add item button
         .toolbar {
             ToolbarItem(placement: .bottomBar) {
