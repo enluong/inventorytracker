@@ -19,6 +19,8 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
+//            InventorySearchView()
+            
             if let error = $items.error {
                 Text(error.localizedDescription)
             }
@@ -30,35 +32,66 @@ struct ContentView: View {
             .listStyle(.insetGrouped)
             
         }
+        // add item button
         .toolbar {
             ToolbarItem(placement: .bottomBar) {
                 Button("+") { vm.addItem() }.font(.title)
             }
-            
             ToolbarItem(placement: .navigationBarLeading) { EditButton() }
         }
+        
+        // sort by buttons
         .onChange(of: vm.selectedSortType) { _ in onSortTypeChanged() }
         .onChange(of: vm.isDescending) { _ in onSortTypeChanged() }
-        .navigationTitle("CSI Inventory")
+//        .navigationTitle("CSI Inventory")
     }
+    
+    // just to check if keyboard is working
+    @State var random = ""
     
     private var listItemsSectionView: some View {
         Section {
             ForEach(items) { item in
                 VStack {
-                    TextField("Name", text: Binding<String>(
-                        get: { item.name },
-                        set: { vm.editedName = $0 }),
-                              onEditingChanged: { vm.onEditingItemNameChanged(item: item, isEditing: $0)}
-                    )
-                    .disableAutocorrection(true)
-                    .font(.headline)
+                    // hstack keeps text and textfield next to each other
+                    // ITEM LOCATION
+                    HStack {
+                        Text("Location:")
+                        TextField("Location", text: Binding<String>(
+                            get: { item.location },
+                            set: { vm.editedItemLocation = $0 }),
+                                  onEditingChanged: { vm.onEditingItemLocationChanged(item: item, isEditing: $0)}
+                        )}
                     
+                    // ITEM NAME
+                    HStack {
+                        Text("Item Name:")
+                        TextField("Name", text: Binding<String>(
+                            get: { item.name },
+                            set: { vm.editedItemName = $0 }),
+                                  onEditingChanged: { vm.onEditingItemNameChanged(item: item, isEditing: $0)}
+                        )}
+                    
+                    // ITEM QUANTITY
                     Stepper("Quantity: \(item.quantity)",
                             value: Binding<Int>(
                                 get: { item.quantity },
                                 set: { vm.updateItem(item, data: ["quantity": $0]) }),
                             in: 0...1000)
+                    
+                    // ITEM TYPE
+                    HStack{
+                        Text("Quantity Type:")
+                        TextField("Type", text: Binding<String>(
+                            get: { item.type },
+                            set: { vm.editedItemType = $0 }),
+                                  onEditingChanged: { vm.onEditingItemTypeChanged(item: item, isEditing: $0)}
+                        )
+                    }
+                    
+                    // check if keyboard works
+                    TextField("Random", text: $random)
+                    
                 }
             }
             .onDelete { vm.onDelete(items: items, indexset: $0) }
@@ -82,7 +115,6 @@ struct ContentView: View {
     private func onSortTypeChanged() {
         $items.predicates = vm.predicates
     }
-      
 }
 
 struct ContentView_Previews: PreviewProvider {
