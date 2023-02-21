@@ -2,8 +2,11 @@
 //  ItemsLookupViewModel.swift
 //  inventorytracker
 //
-//  Created by Erin on 2/15/23.
+//  Created by Alfian Losari on 29/05/22.
 //
+//  Modified by Team SEA 2023
+//
+//  UsersLookupViewModel -- done checking
 
 import Firebase
 import FirebaseFirestore
@@ -12,14 +15,19 @@ import Foundation
 
 class InventoryLookupViewModel: ObservableObject {
     
-    @Published var queriedItem: [InventoryItem] = []
+    // calls array InventoryItem, but makes empty array of quriedItem
+//    @Published var queriedItem: [InventoryItem] = []
+    @Published var queryResultItems: [InventoryItem] = []
     
+    // db variable is for calling Firestore
     private let db = Firestore.firestore()
     
-    func fetchItem(from keyword: String){
+    // fetches item from keyword
+    func fetchItem(with keyword: String){
         db.collection("inventory").whereField("keywordsForLookup", arrayContains: keyword).getDocuments { querySnapshot, error in guard let documents = querySnapshot?.documents, error == nil else { return }
-            self.queriedItem = documents.compactMap { QueryDocumentSnapshot in
-                try? QueryDocumentSnapshot.data(as: InventoryItem.self)
+            
+            self.queryResultItems = documents.compactMap { queryDocumentSnapshot in
+                try? queryDocumentSnapshot.data(as: InventoryItem.self)
             }
         }
     }
