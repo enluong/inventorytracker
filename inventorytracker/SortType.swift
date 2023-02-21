@@ -14,6 +14,7 @@ enum SortType: String, CaseIterable {
     case name
     case quantity
     
+    // returns info created on iPad to database (maybe)
     var text: String {
         switch self {
         case .createdAt: return "Created At"
