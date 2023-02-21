@@ -5,6 +5,8 @@
 //  Created by Alfian Losari on 29/05/22.
 //
 //  Modified by Team SEA 2023
+//
+//  ContentView -- done checking
 
 import FirebaseFirestore
 import FirebaseFirestoreSwift
@@ -12,29 +14,39 @@ import SwiftUI
 
 struct ContentView: View {
     
+    // calls Firestore collection: inventory
     @FirestoreQuery(collectionPath: "inventory",
                     predicates: [.order(by: SortType.createdAt.rawValue, descending: true) ]
-    ) private var items: [InventoryItem]
+                    )
+    // 'items' hold array of [InventoryItem] from collection of inventory
+    private var items: [InventoryItem]
+    
+    // vm links to InventoryListViewModel class
     @StateObject private var vm = InventoryListViewModel()
     
+    // what you see on iPad simulator
     var body: some View {
         VStack {
-//            InventorySearchView()
-            
+            // error if 'items' cannot be displayed due to data error in Firestore db
             if let error = $items.error {
                 Text(error.localizedDescription)
             }
             
+            // the order of what is being displayed
             List {
+                // search bar
                 InventorySearchView()
+                
+                // Sort by button
                 sortBySectionView
+                // items from db
                 listItemsSectionView
             }
-            
-            .listStyle(.insetGrouped)
+            // possibly the white box around each displaysbiv
+        .listStyle(.insetGrouped)
         }
         
-        // add item button
+        // add 'items' button
         .toolbar {
             ToolbarItem(placement: .bottomBar) {
                 Button("+") { vm.addItem() }.font(.title)
@@ -45,16 +57,15 @@ struct ContentView: View {
         // sort by buttons
         .onChange(of: vm.selectedSortType) { _ in onSortTypeChanged() }
         .onChange(of: vm.isDescending) { _ in onSortTypeChanged() }
-        //        .navigationTitle("CSI Inventory")
-        
     }
     
+    // how 'items' display information for each item detail
     private var listItemsSectionView: some View {
         Section {
+            // this is where 'items' turn into 'item' in order to display each item
             ForEach(items) { item in
                 VStack {
                     // hstack keeps text and textfield next to each other
-                    
                     // ITEM LOCATION
                     HStack {
                         Text("Location:")
@@ -106,6 +117,7 @@ struct ContentView: View {
     }
 
  
+    // sort by function
     private var sortBySectionView: some View {
         Section {
             DisclosureGroup("Sort by") {
@@ -120,13 +132,16 @@ struct ContentView: View {
         }
     }
     
+    // sort by function
     private func onSortTypeChanged() {
         $items.predicates = vm.predicates
     }
 }
 
+// generates previews and so far we have ContentView
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
+        InventorySearchView()
         ContentView()
     }
 }
