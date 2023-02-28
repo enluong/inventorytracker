@@ -2,12 +2,12 @@
 //  InventoryListViewModel.swift
 //  inventorytracker
 //
-//  Created by Alfian Losari on 29/05/22.
+//  Referencing Alfian Losari
 //
-//  Modified by Team SEA 2023
+//  by Team SEA 2023
 //
-// UserViewModel
 
+import Foundation
 import FirebaseFirestore
 import SwiftUI
 import FirebaseFirestoreSwift
@@ -17,7 +17,7 @@ class InventoryListViewModel: ObservableObject {
     private let db = Firestore.firestore().collection("inventory")
     
     // placeholder array for items that are being searched
-    @Published var queryResultItems: [InventoryItem] = []
+    @Published var items: [InventoryItem] = []
     
     @Published var selectedSortType = SortType.createdAt
     @Published var isDescending = true
@@ -36,11 +36,12 @@ class InventoryListViewModel: ObservableObject {
     
     // adding item in array InventoryItem
     func addItem() {
-        let item = InventoryItem(location: "Unknown", name: "New Item", quantity: 1, type:"Unknown", cabinet:"Unknown")
-        _ = try? db.addDocument(from: item)
-        
-        // supposed to add the new keywords according to new item
-        db.document().updateData(["keywordsForLookup": item.keywordsForLookup])
+            // presets for InventoryItem details when add new item on iPad
+            // * how to add data with empty keywords field?
+            let item = InventoryItem(location: "Unknown", name: "New Item", quantity: 1, type:"Unknown", cabinet:"Unknown")
+            
+            // adds this new item into database
+            _ = try? db.addDocument(from: item)
     }
     
     // update item in array InventoryItem
@@ -49,9 +50,6 @@ class InventoryListViewModel: ObservableObject {
         var _data = data
         _data["updatedAt"] = FieldValue.serverTimestamp()
         db.document(id).updateData(_data)
-        
-        // supposed to update keywords according to update item
-        db.document().updateData(["keywordsForLookup": item.keywordsForLookup])
     }
     
     // deletes item in array InventoryItem
@@ -92,6 +90,8 @@ class InventoryListViewModel: ObservableObject {
         }
     }
     
+    // SEARCH BAR STUFF ----------------- JUST HERE FOR NOW
+    
     // function when editing item cabinet
     func onEditingItemCabinetChanged(item: InventoryItem, isEditing: Bool) {
         if !isEditing && item.cabinet != editedItemCabinet {
@@ -101,11 +101,56 @@ class InventoryListViewModel: ObservableObject {
             editedItemCabinet = item.cabinet
         }
     }
+    
+    // for search bar stuff
+    func searchItems(query: String) {
+        let collectionRef = Firestore.firestore().collection("inventory")
+        let queryRef = collectionRef.whereField("name", isGreaterThanOrEqualTo: query)
+            .whereField("name", isLessThanOrEqualTo: query + "\u{f8ff}")
+            .whereField("cabinet", isGreaterThanOrEqualTo: query)
+            .whereField("cabinet", isLessThanOrEqualTo: query + "\u{f8ff}")
+            .whereField("location", isGreaterThanOrEqualTo: query)
+            .whereField("location", isLessThanOrEqualTo: query + "\u{f8ff}")
+            .whereField("type", isGreaterThanOrEqualTo: query)
+            .whereField("type", isLessThanOrEqualTo: query + "\u{f8ff}")
+        queryRef.getDocuments() { querySnapshot, error in
+            if let error = error {
+                print("Error searching items: \(error.localizedDescription)")
+                return
+            }
+            guard let documents = querySnapshot?.documents else {
+                print("No matching documents.")
+                return
+            }
+            let items = documents.compactMap { queryDocumentSnapshot -> InventoryItem? in
+                try? queryDocumentSnapshot.data(as: InventoryItem.self)
+            }
+            DispatchQueue.main.async {
+                self.items = items
+            }
+        }
+    }
+
+    func loadItems() {
+        // Retrieve the items from the Firestore database
+        db.getDocuments { (querySnapshot, error) in
+            // Check for errors
+            if let error = error {
+                print("Error getting documents: \(error.localizedDescription)")
+                return
+            }
+            
+            // Parse the query snapshot into an array of InventoryItem objects
+            let items = querySnapshot!.documents.compactMap { document in
+                try? document.data(as: InventoryItem.self)
+            }
+            
+            // Sort the items according to the selected sort type and direction
+//            let sortedItems = items.sorted(by: selectedSortType.sortDescriptor(isDescending: isDescending))
+            
+            // Update the @Published items property
+            self.items = items
+        }
+    }
+    
 }
-        
-    
-
-
-        
-    
-
