@@ -17,17 +17,19 @@ struct ContentView: View {
         TabView {
             InventoryView()
                 .tabItem {
+                    Image(systemName: "house")
                     Text("List of all inventory items")
                 }
             InventorySearchView()
                 .tabItem {
+                    Image(systemName: "magnifyingglass")
                     Text("Search inventory items")
                 }
-            // uncomment these for email tab
-//            EmailView()
-//                .tabItem {
-//                    Text("Email")
-//                }
+            EmailView()
+                .tabItem {
+                    Image(systemName: "mail")
+                    Text("Email Low inventory stocks")
+                }
         }
     }
 }
