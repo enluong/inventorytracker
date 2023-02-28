@@ -2,93 +2,71 @@
 //  InventorySearchView.swift
 //  inventorytracker
 //
-//  Created by Alfian Losari on 29/05/22.
+//  Referencing Alfian Losari
 //
-//  Modified by Team SEA 2023
+//  by Team SEA 2023
 //
-//  ProfileSearchView -- done checking 2
 
 import SwiftUI
+import Foundation
+import FirebaseFirestore
+import SwiftUI
+import FirebaseFirestoreSwift
+
+struct InventorySearchBar: UIViewRepresentable {
+    
+    @Binding var searchText: String
+    
+    class Coordinator: NSObject, UISearchBarDelegate {
+        @Binding var searchText: String
+        
+        init(searchText: Binding<String>) {
+            _searchText = searchText
+        }
+        
+        func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+            self.searchText = searchText
+        }
+    }
+    
+    func makeUIView(context: Context) -> UISearchBar {
+        let searchBar = UISearchBar()
+        searchBar.delegate = context.coordinator
+        return searchBar
+    }
+    
+    func updateUIView(_ uiView: UISearchBar, context: Context) {
+        uiView.text = searchText
+    }
+    
+    func makeCoordinator() -> Coordinator {
+        return Coordinator(searchText: $searchText)
+    }
+}
 
 struct InventorySearchView: View {
     
-    // placeholder for 'items' array but for a a singular 'item'
-    @EnvironmentObject var item: InventoryListViewModel
+    // calls Firestore collection: inventory
+    @FirestoreQuery(collectionPath: "inventory",
+                    predicates: [.order(by: SortType.createdAt.rawValue, descending: true)])
     
-    // itemLookup calls for file that fetches item from keyword search
-    @StateObject var itemLookup = InventoryLookupViewModel()
+    private var items: [InventoryItem]
     
-    // keyword is just keyword sequence
-    @State var keyword = ""
+    // listvm links to InventoryListViewModel class
+    @StateObject private var listvm = InventoryListViewModel()
     
-    // this is for actual search function on simulator/physical
+    // holds the search query entered by the user
+    @State private var searchText = ""
+    
+    // what you see on iPad simulator
     var body: some View {
-        let keywordBinding = Binding<String>(
-            get: {
-                keyword
-            },
-            set: {
-                keyword = $0
-                itemLookup.fetchItem(with: keyword)
-            }
-        )
         VStack {
-            SearchBarView(keyword: keywordBinding)
-            ScrollView {
-                ForEach(itemLookup.queryResultItems, id: \.id) { item in
-                    InventoryBarView(item: item)
-                }
+            InventorySearchBar(searchText: $searchText)
+            
+            // error if 'items' cannot be displayed due to data error in Firestore db
+            if let error = $items.error {
+                Text(error.localizedDescription)
             }
         }
-        .navigationBarHidden(true)
-        .navigationBarTitleDisplayMode(.inline)
-        // stretches search bar
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
-        
-// design of search bar
-struct SearchBarView: View {
-    @Binding var keyword: String
-    
-    var body: some View {
-        ZStack {
-            Rectangle()
-                .foregroundColor(Color.gray.opacity(0.5))
-            HStack {
-                TextField("Searching for...", text: $keyword)
-                .autocapitalization(.none)
-            }
-            .padding(.leading, 13)
-        }
-        .frame(height: 40)
-        .cornerRadius(13)
-        .padding()
-    }
-}
-
-// design for actual search results
-struct InventoryBarView: View {
-    var item: InventoryItem
-    
-    var body: some View {
-        ZStack {
-            Rectangle()
-                .foregroundColor(Color.gray.opacity(0.2))
-            HStack {
-                Text("\(item.location)")
-                Spacer()
-                Text("\(item.name)")
-                Spacer()
-                Text("\(item.quantity)")
-                Spacer()
-                Text("\(item.type)")
-            }
-            .padding(.horizontal, 10)
-        }
-        .frame(maxWidth: .infinity, minHeight: 100)
-        .cornerRadius(13)
-        .padding()
-    }
-}
-    
