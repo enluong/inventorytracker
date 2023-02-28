@@ -56,15 +56,20 @@ struct InventorySearchView: View {
     @State private var searchText: String = ""
     
     // filtered items based on search query
-        private var filteredItems: [InventoryItem] {
-            if searchText.isEmpty {
-                return items
-            } else {
-                return items.filter { item in
-                    return item.name.localizedCaseInsensitiveContains(searchText)
-                }
+    private var filteredItems: [InventoryItem] {
+        if searchText.isEmpty {
+            return items
+        } else {
+            return items.filter { item in
+                return item.name.localizedCaseInsensitiveContains(searchText) ||
+                    item.location.localizedCaseInsensitiveContains(searchText) ||
+                    item.cabinet.localizedCaseInsensitiveContains(searchText) ||
+                    item.type.localizedCaseInsensitiveContains(searchText) ||
+                    String(item.quantity).localizedCaseInsensitiveContains(searchText)
             }
         }
+    }
+
     
     // what you see on iPad simulator
     var body: some View {
