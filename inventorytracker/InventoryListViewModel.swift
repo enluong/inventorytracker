@@ -90,8 +90,6 @@ class InventoryListViewModel: ObservableObject {
         }
     }
     
-    // SEARCH BAR STUFF ----------------- JUST HERE FOR NOW
-    
     // function when editing item cabinet
     func onEditingItemCabinetChanged(item: InventoryItem, isEditing: Bool) {
         if !isEditing && item.cabinet != editedItemCabinet {
@@ -101,6 +99,9 @@ class InventoryListViewModel: ObservableObject {
             editedItemCabinet = item.cabinet
         }
     }
+    
+    
+    // SEARCH BAR STUFF ----------------- JUST HERE FOR NOW
     
     // for search bar stuff
     func searchItems(query: String) {
