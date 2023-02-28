@@ -2,11 +2,10 @@
 //  inventorytrackerApp.swift
 //  inventorytracker
 //
-//  Created by Alfian Losari on 29/05/22.
+//  Referencing Alfian Losari
 //
-//  Modified by Team SEA 2023
+//  by Team SEA 2023
 //
-//  UserAuthenticationApp - done checking 2
 
 import FirebaseCore
 import FirebaseFirestore
@@ -14,6 +13,7 @@ import Firebase
 import SwiftUI
 import UIKit
 
+// responsible for initializing and configuing app upon launch
 class AppDelegate: NSObject, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -32,11 +32,10 @@ struct inventorytrackerApp: App {
     
     var body: some Scene {
         WindowGroup {
-//            NavigationView {
             let item = InventoryListViewModel()
             ContentView()
-            .environmentObject(item)
-//            }
+                .environmentObject(item)
         }
     }
+    
 }
