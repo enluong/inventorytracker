@@ -2,8 +2,9 @@
 //  SortType.swift
 //  inventorytracker
 //
-//  Created by Alfian Losari on 29/05/22.
+//  Referencing Alfian Losari
 //
+//  by Team SEA 2023
 
 import Foundation
 
@@ -14,7 +15,7 @@ enum SortType: String, CaseIterable {
     case name
     case quantity
     
-    // returns info created on iPad to database (maybe)
+    // displays InventoryItem on iPad from database
     var text: String {
         switch self {
         case .createdAt: return "Created At"
