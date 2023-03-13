@@ -2,7 +2,9 @@
 //  EmailView.swift
 //  inventorytracker
 //
-//  Created by John Dao  on 2/27/23.
+//  Referencing Alfian Losari & John Dao
+//
+//  by Team SEA 2023
 //
 
 import SwiftUI
@@ -14,20 +16,22 @@ import UIKit
 import MessageUI
 
 func sendEmail(to recipient: String, subject: String, body: String) {
+    
     // Check if the device can send emails
     guard MFMailComposeViewController.canSendMail() else {
         print("Device can't send emails")
         return
     }
-
+    
     // Create the mail composer view controller and set its properties
     let mailComposerVC = MFMailComposeViewController()
     mailComposerVC.setToRecipients([recipient])
     mailComposerVC.setSubject(subject)
     mailComposerVC.setMessageBody(body, isHTML: false)
-
+    
     // Present the mail composer view controller modally
-    if let topViewController = UIApplication.shared.windows.first?.rootViewController {
+    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+       let topViewController = windowScene.windows.first?.rootViewController {
         topViewController.present(mailComposerVC, animated: true, completion: nil)
     }
 }
@@ -80,11 +84,12 @@ struct EmailView: View {
             Button("Notify Supervisor", action: {
                 let lowQuantityItems = items.filter { $0.quantity == 0 }
                 let emailBody = "The following items are low in stock: \(lowQuantityItems.map { $0.name }.joined(separator: ", "))"
-                sendEmail(to: "boupahrathandrew@gmail.com", subject: "Inventory Alert", body: emailBody)
+                sendEmail(to: "cleary2@uw.edu", subject: "Inventory Alert", body: emailBody)
             })
-            .frame(width: 1000, height: 100) //adjust button size
+            .frame(width: 1000, height: 60) //adjust button size
             .foregroundColor(.white) //text color
-            .background(Color.blue) //background color
+            .background(Color.blue) //background colorh
+            Spacer()
         }
     }
     
@@ -151,4 +156,3 @@ struct EmailView: View {
         db.document(id).updateData(_data)
     }
 }
-
