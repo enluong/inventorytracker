@@ -99,5 +99,7 @@ class InventoryListViewModel: ObservableObject {
             editedItemCabinet = item.cabinet
         }
     }
-    
 }
+        
+    
+
