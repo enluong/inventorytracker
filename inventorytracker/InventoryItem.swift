@@ -25,3 +25,4 @@ struct InventoryItem: Identifiable, Codable {
     var type: String
     var cabinet: String
 }
+    
